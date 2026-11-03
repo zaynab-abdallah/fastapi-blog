@@ -64,6 +64,7 @@ async def create_post(
     new_post = models.Post(
         title=post.title,
         content=post.content,
+        user_id=current_user.id,
 
     )
 
