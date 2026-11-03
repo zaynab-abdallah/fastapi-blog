@@ -31,44 +31,56 @@
     <script type="module">
       import { getErrorMessage, showModal } from '/static/js/utils.js';
 
-      const loginForm = document.getElementById('loginForm');
+const loginForm = document.getElementById('loginForm');
 
-      loginForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-        const formData = new FormData(loginForm);
+    const formData = new FormData(loginForm);
 
-        try {
-          // OAuth2PasswordRequestForm expects form data, not JSON
-          const response = await fetch('/api/users/token', {
+    // Convert FormData to URL-encoded format
+    const formBody = new URLSearchParams(formData);
+
+    try {
+        const response = await fetch('/api/users/token', {
             method: 'POST',
-            body: formData,
-          });
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formBody,
+        });
 
-          if (response.ok) {
+        if (response.ok) {
             const data = await response.json();
 
-            // Store token in localStorage
             localStorage.setItem('access_token', data.access_token);
 
-            // Show success modal and redirect to home
             document.getElementById('successMessage').textContent =
-              'Login successful!';
+                'Login successful!';
+
             showModal('successModal');
 
-            document.getElementById('successModal').addEventListener('hidden.bs.modal', () => {
-              window.location.href = '/';
-            }, { once: true });
-          } else {
+            document.getElementById('successModal').addEventListener(
+                'hidden.bs.modal',
+                () => {
+                    window.location.href = '/';
+                },
+                { once: true }
+            );
+        } else {
             const error = await response.json();
-            document.getElementById('errorMessage').textContent = getErrorMessage(error);
+
+            document.getElementById('errorMessage').textContent =
+                getErrorMessage(error);
+
             showModal('errorModal');
-          }
-        } catch (error) {
-          document.getElementById('errorMessage').textContent =
-            'Network error. Please check your connection and try again.';
-          showModal('errorModal');
         }
-      });
+    } catch (error) {
+        document.getElementById('errorMessage').textContent =
+            'Network error. Please check your connection and try again.';
+
+        showModal('errorModal');
+    }
+});
     </script>
 {% endblock scripts %}

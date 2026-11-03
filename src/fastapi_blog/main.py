@@ -11,6 +11,7 @@ from fastapi.exception_handlers import (
 )
 from fastapi import FastAPI, HTTPException, Request, status, Depends
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -43,6 +44,19 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 PAGE_SIZE = 10
 
 app = FastAPI(title="FastAPI Blog", lifespan=lifespan)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 app.mount(
     "/static",
