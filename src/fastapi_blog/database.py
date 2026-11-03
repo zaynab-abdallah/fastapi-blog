@@ -13,7 +13,11 @@ database_url = settings.database_url.replace(
 1,
 )
 
-engine = create_async_engine(database_url)
+engine = create_async_engine(
+    database_url,
+    pool_pre_ping=True,
+    pool_recycle=1800,
+)
 
 AsyncSessionLocal = async_sessionmaker(
 engine,
